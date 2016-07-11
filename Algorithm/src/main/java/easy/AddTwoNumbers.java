@@ -17,9 +17,9 @@ public class AddTwoNumbers {
         ListNode resultNode = new ListNode(0);
         ListNode currentNode = resultNode;
         int carryover = 0;
-        while(l1 != null) {
+        while (l1 != null) {
 
-            if(l2 != null) {
+            if (l2 != null) {
                 ListNode newNode = new ListNode((l1.val + l2.val + carryover) % 10);
                 carryover = (l1.val + l2.val + carryover) / 10;
                 currentNode.next = newNode;
@@ -33,14 +33,14 @@ public class AddTwoNumbers {
             l1 = l1.next;
         }
 
-        while(l2 != null) {
+        while (l2 != null) {
             currentNode.next = new ListNode((carryover + l2.val) % 10);
             carryover = (carryover + l2.val) / 10;
             currentNode = currentNode.next;
             l2 = l2.next;
         }
 
-        if(carryover > 0) {
+        if (carryover > 0) {
             currentNode.next = new ListNode(1);
         }
 
@@ -58,7 +58,7 @@ public class AddTwoNumbers {
 
         ListNode mergedNode = new AddTwoNumbers().addTwoNumbers(ln1, ln2);
 
-        while(mergedNode != null) {
+        while (mergedNode != null) {
             System.out.println(mergedNode.val);
             mergedNode = mergedNode.next;
         }
