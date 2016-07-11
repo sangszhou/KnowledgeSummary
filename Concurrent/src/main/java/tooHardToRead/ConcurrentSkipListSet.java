@@ -94,7 +94,7 @@
 //     * element.  This field is declared final for the sake of thread
 //     * safety, which entails some ugliness in clone()
 //     */
-//    private final concurrent.ConcurrentNavigableMap<E,Object> m;
+//    private final concurrent.sourcecode.ConcurrentNavigableMap<E,Object> m;
 //
 //    /**
 //     * Constructs a new, empty set that orders its elements according to
@@ -148,7 +148,7 @@
 //    /**
 //     * For use by submaps
 //     */
-//    ConcurrentSkipListSet(concurrent.ConcurrentNavigableMap<E,Object> m) {
+//    ConcurrentSkipListSet(concurrent.sourcecode.ConcurrentNavigableMap<E,Object> m) {
 //        this.m = m;
 //    }
 //
@@ -481,7 +481,7 @@
 //                (ConcurrentSkipListSet.class.getDeclaredField("m"));
 //        } catch (Exception ex) { throw new Error(ex); }
 //    }
-//    private void setMap(concurrent.ConcurrentNavigableMap<E,Object> map) {
+//    private void setMap(concurrent.sourcecode.ConcurrentNavigableMap<E,Object> map) {
 //        unsafe.putObjectVolatile(this, mapOffset, map);
 //    }
 //
