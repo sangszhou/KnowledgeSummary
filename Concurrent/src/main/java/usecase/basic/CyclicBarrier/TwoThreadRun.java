@@ -11,12 +11,12 @@ import java.util.concurrent.CyclicBarrier;
 public class TwoThreadRun {
 
     public static void main(String[] args) {
-        CyclicBarrier barrier1 = new CyclicBarrier(2);
+        
+    	CyclicBarrier barrier1 = new CyclicBarrier(2);
         CyclicBarrier barrier2 = new CyclicBarrier(2);
 
         new Thread(new CyclicBarrierRunnable(barrier1, barrier2)).start();
         new Thread(new CyclicBarrierRunnable(barrier1, barrier2)).start();
-
 
         try {
             Thread.sleep(5000);
