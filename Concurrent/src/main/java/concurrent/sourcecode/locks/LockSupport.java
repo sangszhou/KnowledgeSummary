@@ -176,6 +176,8 @@ public class LockSupport {
      * the thread to park in the first place. Callers may also determine,
      * for example, the interrupt status of the thread upon return.
      *
+     * 为什么 要调用两次 blocker ?
+     *
      * @param blocker the synchronization object responsible for this
      *        thread parking
      * @since 1.6
