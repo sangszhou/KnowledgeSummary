@@ -56,7 +56,7 @@ public class HackClassFile {
         cf.setConstantPool(infos);
         fis.close();
 
-        File newFile = new File(System.getProperty("user.dir") + "/JVM/src/main/resources/NewHelloWord.class");
+        File newFile = new File(System.getProperty("user.dir") + "/JVM/src/main/resources/HelloWord.class");
 
         ClassFileWriter.writeToFile(newFile, cf);
 
