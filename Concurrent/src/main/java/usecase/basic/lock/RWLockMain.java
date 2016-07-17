@@ -14,6 +14,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
  */
 public class RWLockMain {
     public static void main(String[] args) {
+
         ReadWriteLock lock = new ReentrantReadWriteLock();
 
         lock.readLock().lock();

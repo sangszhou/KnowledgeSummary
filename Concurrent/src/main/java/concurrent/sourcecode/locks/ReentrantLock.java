@@ -103,6 +103,14 @@ import java.util.concurrent.locks.Condition;
  * the same thread. Attempts to exceed this limit result in
  * {@link Error} throws from locking methods.
  *
+ * 一个最佳实践是在 lock 内部使用 try catch 结构, 把锁的释放写在 finally block 中
+ * 这样能够保证锁总是会被释放
+ *
+ * 2016年07月17日 星期日
+ * 看过一遍, 感触不深, 主要是对 Sync 的理解不到位
+ * FairSync 可没看出在哪对线程进行排序的
+ * 再看 Semaphore, CountDownLatch, 再回看 AbstractSync
+ *
  * @since 1.5
  * @author Doug Lea
  */
@@ -133,14 +141,18 @@ public class ReentrantLock implements java.util.concurrent.locks.Lock, java.io.S
         final boolean nonfairTryAcquire(int acquires) {
             final Thread current = Thread.currentThread();
             int c = getState();
+
+            // c == 0 说明了什么
+            // 1) 说明可以锁是空闲的, 可以被获取
             if (c == 0) {
                 if (compareAndSetState(0, acquires)) {
                     setExclusiveOwnerThread(current);
                     return true;
                 }
             }
+            // 可重入锁的意义就在着了, 同一个线程可以一直进入的
             else if (current == getExclusiveOwnerThread()) {
-                int nextc = c + acquires;
+                int nextc = c + acquires; // 为什么要 +1
                 if (nextc < 0) // overflow
                     throw new Error("Maximum lock count exceeded");
                 setState(nextc);
@@ -151,9 +163,13 @@ public class ReentrantLock implements java.util.concurrent.locks.Lock, java.io.S
 
         protected final boolean tryRelease(int releases) {
             int c = getState() - releases;
+
             if (Thread.currentThread() != getExclusiveOwnerThread())
                 throw new IllegalMonitorStateException();
+
             boolean free = false;
+
+            // 没有人绑定在在这上面吗
             if (c == 0) {
                 free = true;
                 setExclusiveOwnerThread(null);
@@ -235,10 +251,12 @@ public class ReentrantLock implements java.util.concurrent.locks.Lock, java.io.S
          */
         protected final boolean tryAcquire(int acquires) {
             final Thread current = Thread.currentThread();
+
             int c = getState();
+
+            // 为什么 c == 0 了还要再判断是否有 QueuedPredecessors ?
             if (c == 0) {
-                if (!hasQueuedPredecessors() &&
-                    compareAndSetState(0, acquires)) {
+                if (!hasQueuedPredecessors() && compareAndSetState(0, acquires)) {
                     setExclusiveOwnerThread(current);
                     return true;
                 }
@@ -749,6 +767,7 @@ public class ReentrantLock implements java.util.concurrent.locks.Lock, java.io.S
             throw new NullPointerException();
         if (!(condition instanceof AbstractQueuedSynchronizer.ConditionObject))
             throw new IllegalArgumentException("not owner");
+
         return sync.getWaitingThreads((AbstractQueuedSynchronizer.ConditionObject)condition);
     }
 
