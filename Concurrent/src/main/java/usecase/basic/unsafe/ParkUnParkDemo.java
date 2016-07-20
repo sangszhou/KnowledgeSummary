@@ -19,11 +19,13 @@ public class ParkUnParkDemo {
 
         public void run() {
             System.out.println("before unpark");
+
             try {
                 java.lang.Thread.sleep(3000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+
             // 获取blocker
             System.out.println("Blocker info " + LockSupport.getBlocker((java.lang.Thread) object));
             // 释放许可

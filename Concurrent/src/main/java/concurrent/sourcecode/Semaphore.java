@@ -34,8 +34,6 @@
  */
 
 package concurrent.sourcecode;
-import java.util.*;
-import java.util.concurrent.locks.*;
 
 /**
  * A counting semaphore.  Conceptually, a semaphore maintains a set of
@@ -182,8 +180,9 @@ public class Semaphore implements java.io.Serializable {
             for (;;) {
                 int available = getState();
                 int remaining = available - acquires;
-                if (remaining < 0 ||
-                    compareAndSetState(available, remaining))
+
+                // 为什么小于 0 就直接返回了
+                if (remaining < 0 || compareAndSetState(available, remaining))
                     return remaining;
             }
         }
@@ -241,13 +240,13 @@ public class Semaphore implements java.io.Serializable {
 
         protected int tryAcquireShared(int acquires) {
             for (;;) {
-                if (getFirstQueuedThread() != Thread.currentThread() &&
-                    hasQueuedThreads())
+                if (getFirstQueuedThread() != Thread.currentThread() && hasQueuedThreads())
                     return -1;
+
                 int available = getState();
                 int remaining = available - acquires;
-                if (remaining < 0 ||
-                    compareAndSetState(available, remaining))
+
+                if (remaining < 0 || compareAndSetState(available, remaining))
                     return remaining;
             }
         }
