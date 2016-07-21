@@ -602,7 +602,7 @@ public abstract class AbstractQueuedSynchronizer
      * Inserts node into queue, initializing if necessary. See picture above.
      *
      * @param node the node to insert
-     * @return node's predecessor
+     * @return node's predecessor 返回的是 node 的前序节点
      */
     private Node enq(final Node node) {
         for (; ; ) {
@@ -911,6 +911,7 @@ public abstract class AbstractQueuedSynchronizer
     /**
      * Acquires in exclusive interruptible mode.
      *
+     * 和 share acquire 的区别是什么?
      * @param arg the acquire argument
      */
     private void doAcquireInterruptibly(int arg)
@@ -943,8 +944,7 @@ public abstract class AbstractQueuedSynchronizer
      * @param nanosTimeout max wait time
      * @return {@code true} if acquired
      */
-    private boolean doAcquireNanos(int arg, long nanosTimeout)
-            throws InterruptedException {
+    private boolean doAcquireNanos(int arg, long nanosTimeout) throws InterruptedException {
         long lastTime = System.nanoTime();
         final Node node = addWaiter(Node.EXCLUSIVE);
         boolean failed = true;
@@ -977,6 +977,7 @@ public abstract class AbstractQueuedSynchronizer
     /**
      * Acquires in shared uninterruptible mode.
      *
+     * shared 和 exclusive 的区别是什么
      * @param arg the acquire argument
      */
     private void doAcquireShared(int arg) {
@@ -1286,6 +1287,8 @@ public abstract class AbstractQueuedSynchronizer
      * more threads if {@link #tryRelease} returns true.
      * This method can be used to implement method {@link java.util.concurrent.locks.Lock#unlock}.
      *
+     * 为什么要 release head 的后继, 而不是 head 本身呢?
+     *
      * @param arg the release argument.  This value is conveyed to
      *            {@link #tryRelease} but is otherwise uninterpreted and
      *            can represent anything you like.
@@ -1450,6 +1453,8 @@ public abstract class AbstractQueuedSynchronizer
          * is actually first node. If not, we continue on, safely
          * traversing from tail back to head to find first,
          * guaranteeing termination.
+         *
+         * 从后向前找
          */
 
         Node t = tail;
@@ -1546,6 +1551,7 @@ public abstract class AbstractQueuedSynchronizer
         // The correctness of this depends on head being initialized
         // before tail and on head.next being accurate if the current
         // thread is first in queue.
+
         Node t = tail; // Read fields in reverse initialization order
         Node h = head;
         Node s;
@@ -1602,10 +1608,12 @@ public abstract class AbstractQueuedSynchronizer
      * as {@link #getQueuedThreads} except that it only returns
      * those threads waiting due to an exclusive acquire.
      *
+     * shared 和 exlusive 的能在同一个 node 上么
      * @return the collection of threads
      */
     public final Collection<Thread> getExclusiveQueuedThreads() {
         ArrayList<Thread> list = new ArrayList<Thread>();
+
         for (Node p = tail; p != null; p = p.prev) {
             if (!p.isShared()) {
                 Thread t = p.thread;
@@ -1613,6 +1621,7 @@ public abstract class AbstractQueuedSynchronizer
                     list.add(t);
             }
         }
+
         return list;
     }
 
@@ -1626,6 +1635,7 @@ public abstract class AbstractQueuedSynchronizer
      */
     public final Collection<Thread> getSharedQueuedThreads() {
         ArrayList<Thread> list = new ArrayList<Thread>();
+
         for (Node p = tail; p != null; p = p.prev) {
             if (p.isShared()) {
                 Thread t = p.thread;
@@ -1633,6 +1643,7 @@ public abstract class AbstractQueuedSynchronizer
                     list.add(t);
             }
         }
+
         return list;
     }
 
@@ -1647,7 +1658,9 @@ public abstract class AbstractQueuedSynchronizer
      */
     public String toString() {
         int s = getState();
+
         String q = hasQueuedThreads() ? "non" : "";
+
         return super.toString() +
                 "[State = " + s + ", " + q + "empty queue]";
     }
@@ -1686,6 +1699,7 @@ public abstract class AbstractQueuedSynchronizer
      */
     private boolean findNodeFromTail(Node node) {
         Node t = tail;
+
         for (; ; ) {
             if (t == node)
                 return true;
@@ -1828,6 +1842,7 @@ public abstract class AbstractQueuedSynchronizer
     public final int getWaitQueueLength(ConditionObject condition) {
         if (!owns(condition))
             throw new IllegalArgumentException("Not owner");
+
         return condition.getWaitQueueLength();
     }
 
@@ -1850,6 +1865,7 @@ public abstract class AbstractQueuedSynchronizer
     public final Collection<Thread> getWaitingThreads(ConditionObject condition) {
         if (!owns(condition))
             throw new IllegalArgumentException("Not owner");
+
         return condition.getWaitingThreads();
     }
 
@@ -1869,6 +1885,7 @@ public abstract class AbstractQueuedSynchronizer
      * so deserialized conditions have no waiters.
      */
     public class ConditionObject implements Condition, java.io.Serializable {
+
         private static final long serialVersionUID = 1173984872572414699L;
         /**
          * First node of condition queue.
@@ -1904,6 +1921,7 @@ public abstract class AbstractQueuedSynchronizer
                 firstWaiter = node;
             else
                 t.nextWaiter = node;
+
             lastWaiter = node;
             return node;
         }
@@ -1919,6 +1937,7 @@ public abstract class AbstractQueuedSynchronizer
             do {
                 if ((firstWaiter = first.nextWaiter) == null)
                     lastWaiter = null;
+
                 first.nextWaiter = null;
             } while (!transferForSignal(first) &&
                     (first = firstWaiter) != null);
